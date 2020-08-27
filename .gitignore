@@ -1,0 +1,9 @@
+venv
+generator/**/weights
+generator/**/data
+generator/**/__pycache__
+generator/__pycache__
+music_generator/**/weights
+music_generator/**/data
+music_generator/**/__pycache__
+gui/__pycache__
