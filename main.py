@@ -19,6 +19,7 @@ from generator.openAI.GPT2.config import GPT2Config
 from generator.openAI.GPT2.sample import sample_sequence
 from generator.openAI.GPT2.encoder import get_encoder
 from generator.openAI import openAI_generator
+from generator.transformers_partei import partei_generation
 
 from gui import gui_functions as gf
 # from gui import gui_functions_test as gf

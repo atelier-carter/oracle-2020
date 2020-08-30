@@ -21,6 +21,7 @@ from generator.openAI.GPT2.config import GPT2Config
 from generator.openAI.GPT2.sample import sample_sequence
 from generator.openAI.GPT2.encoder import get_encoder
 from generator.openAI import openAI_generator
+from generator.transformers_partei import partei_generation
 
 # music generation imports
 from music_generator import generate, config, utils
@@ -33,7 +34,7 @@ root = tk.Tk()
 # disable the resize button
 # root.resizable(0,0)
 root.attributes('-fullscreen',True)
-root.configure(background='#E5F2FF')
+root.configure(background='#F18C8E')
 
 # make the window full screen
 class FullScreen(object):
@@ -56,7 +57,7 @@ full_screen = FullScreen(root)
 # --------------------------  TEXT  --------------------------
 
 title_text = Label(text='A PORTRAIT OF THE AI AS A YOUNG CYBER ORACLE',
-                    background='#E5F2FF',
+                    background='#F18C8E',
                     font=("Helvetica", 17))
 
 title_text.place(relx=.5, 
@@ -76,7 +77,7 @@ line.place(relx=.5,
 
 
 knowledge_base_text = Label(text='1. CHOOSE THE KNOWLEDGE BASE OF THE ORACLE',
-                    background='#E5F2FF',
+                    background='#F18C8E',
                     font=("Helvetica", 14))
 
 knowledge_base_text.place(relx=.5, 
@@ -91,9 +92,9 @@ def knowledge_base_radio(knowledge_base, dataset):
                         text=dataset, 
                         variable=knowledge_base, 
                         value=dataset,
-                        background='#E5F2FF', 
-                        activebackground='#E5F2FF',
-                        activeforeground='#E5F2FF',
+                        background='#F18C8E', 
+                        activebackground='#F18C8E',
+                        activeforeground='#F18C8E',
                         font=("Helvetica", 12))
     return knowledge
 
@@ -108,34 +109,34 @@ artCrap.place(relx=.33,
                 rely=.09, 
                 anchor="c")
 				
-philosophy = knowledge_base_radio(knowledge_base, 'Nietzsche + Friends')
-philosophy.place(relx=.38, 
+openAIpartei = knowledge_base_radio(knowledge_base, 'Partei Text')
+openAIpartei.place(relx=.38,
                 rely=.09, 
                 anchor="c")
 
 
-shakespeare = knowledge_base_radio(knowledge_base, 'Shakespeare')
-shakespeare.place(relx=.48, 
-                rely=.09, 
-                anchor="c")
-
-
-cooking_recipes = knowledge_base_radio(knowledge_base, 'Cooking Recipes')
-cooking_recipes.place(relx=.58,
-                rely=.09,
-                anchor="c")
-
-
-telephone_book = knowledge_base_radio(knowledge_base, 'Telephone Book')
-telephone_book.place(relx=.68,
-                rely=.09,
-                anchor="c")
+# shakespeare = knowledge_base_radio(knowledge_base, 'Shakespeare')
+# shakespeare.place(relx=.48,
+#                 rely=.09,
+#                 anchor="c")
+#
+#
+# cooking_recipes = knowledge_base_radio(knowledge_base, 'Cooking Recipes')
+# cooking_recipes.place(relx=.58,
+#                 rely=.09,
+#                 anchor="c")
+#
+#
+# telephone_book = knowledge_base_radio(knowledge_base, 'Telephone Book')
+# telephone_book.place(relx=.68,
+#                 rely=.09,
+#                 anchor="c")
 
 
 class ValidateContext:
     def __init__(self, root):
         self.context_text_text = Label(text='2. GIVE THE ORACLE SOME CONTEXT, ASK IT A QUESTION OR SHARE WHAT IS ON YOUR MIND', 
-                                    background='#E5F2FF',
+                                    background='#F18C8E',
                                     font=("Helvetica", 14))
         
         self.context_text_text.place(relx=.5,
@@ -184,7 +185,7 @@ def temperature_slider():
 
 temperature = temperature_slider()
 temperature_text = Label(text='3. CHOOSE THE LEVEL OF CHANCE AND CONTINGENCY',
-                        background='#E5F2FF',
+                        background='#F18C8E',
                         font=("Helvetica", 14))
 
 temperature_text.place(relx=.35, 
@@ -215,7 +216,7 @@ def text_amount_slider():
 text_amount = text_amount_slider()
 
 text_amount_text = Label(text='4. CHOOSE THE LENGTH OF THE ANSWER',
-                    background='#E5F2FF',
+                    background='#F18C8E',
                     font=("Helvetica", 14))
 
 text_amount_text.place(relx=.65, 
@@ -234,7 +235,7 @@ def save_text_stats(choice, text_length, temperature, context, generated_text):
 def generate_text():
     choice = knowledge_base.get()
     if context_obj.context_text.get() == '':
-        if choice == 'OpenAI':
+        if ((choice == 'OpenAI') or (choice == 'Partei Text')):
             context = 'It was a bright cold day in April, and the clocks were striking thirteen.'
 
         else:
@@ -245,7 +246,7 @@ def generate_text():
     if choice == 'OpenAI':
         progress.start(50)
         progress_bar_text = Label(text='Please wait while the text is being generated',
-                            background='#E5F2FF',
+                            background='#F18C8E',
                             font=("Helvetica", 12))
 
         progress_bar_text.place(relx=.5, 
@@ -257,6 +258,28 @@ def generate_text():
         output_text = output_text[:text_amount.get()]
         generated_text.configure(state='normal')
         generated_text.delete(1.0,END)
+        generated_text.insert(tk.END, output_text)
+        generated_text.configure(state='disabled')
+
+        progress.stop()
+        progress_bar_text.place_forget()
+
+    elif choice == 'Partei Text':
+        progress.start(50)
+        progress_bar_text = Label(text='Please wait while the text is being generated',
+                                  background='#F18C8E',
+                                  font=("Helvetica", 12))
+
+        progress_bar_text.place(relx=.5,
+                                rely=.37,
+                                anchor="c")
+
+        # def display_AI_text(q):
+        output_text = partei_generation.sample(length=int(text_amount.get() / 3),
+                                              context_tokens=context)
+        output_text = output_text[:text_amount.get()]
+        generated_text.configure(state='normal')
+        generated_text.delete(1.0, END)
         generated_text.insert(tk.END, output_text)
         generated_text.configure(state='disabled')
 
@@ -294,7 +317,7 @@ def generate_text():
         generated_text.configure(state='disabled')
 
     # save stats in a file
-    save_text_stats(choice, text_amount.get(), temperature.get(), context, output_text)
+    #save_text_stats(choice, text_amount.get(), temperature.get(), context, output_text)
 
     # clear the context text from the widget
     context_obj.context_text.delete(0, 'end')
@@ -407,7 +430,7 @@ def stop_music():
 
 # music scales
 text_amount_text = Label(text='6. CHOOSE A MUSICAL SCALE',
-                    background='#E5F2FF',
+                    background='#F18C8E',
                     font=("Helvetica", 14))
 
 text_amount_text.place(relx=.5, 
@@ -422,9 +445,9 @@ def musical_scale_radio(musical_scale, dataset):
                         text=dataset, 
                         variable=musical_scale, 
                         value=dataset,
-                        background='#E5F2FF', 
-                        activebackground='#E5F2FF',
-                        activeforeground='#E5F2FF',
+                        background='#F18C8E', 
+                        activebackground='#F18C8E',
+                        activeforeground='#F18C8E',
                         font=("Helvetica", 12))
     return scale
 
@@ -473,7 +496,7 @@ def note_density_slider(start, end):
 
 note_density = note_density_slider(5, 7)
 note_density_text = Label(text='7. CHOOSE A NOTE DENSITY',
-                        background='#E5F2FF',
+                        background='#F18C8E',
                         font=("Helvetica", 14))
 
 note_density_text.place(relx=.26, 
@@ -504,7 +527,7 @@ def music_temperature_slider():
 
 music_temperature = music_temperature_slider()
 music_temperature_text = Label(text='8. CHOOSE THE LEVEL OF CHANCE AND CONTINGENCY',
-                        background='#E5F2FF',
+                        background='#F18C8E',
                         font=("Helvetica", 14))
 
 music_temperature_text.place(relx=.5, 
@@ -535,7 +558,7 @@ def music_amount_slider():
 
 music_amount = music_amount_slider()
 music_amount_text = Label(text='9. CHOOSE THE LENGTH OF THE MUSIC TO BE GENERATED',
-                        background='#E5F2FF',
+                        background='#F18C8E',
                         font=("Helvetica", 14))
 
 music_amount_text.place(relx=.8, 
@@ -632,9 +655,9 @@ happy_reaction = Radiobutton(root,
                     variable=reaction, 
                     value='happy',
                     command=check_reaction,
-                    background='#E5F2FF', 
-                    activebackground='#E5F2FF',
-                    activeforeground='#E5F2FF',
+                    background='#F18C8E', 
+                    activebackground='#F18C8E',
+                    activeforeground='#F18C8E',
                     font=("Helvetica", 12))
 
 sad_reaction = Radiobutton(root, 
@@ -642,9 +665,9 @@ sad_reaction = Radiobutton(root,
                     variable=reaction, 
                     value='sad',
                     command=check_reaction,
-                    background='#E5F2FF', 
-                    activebackground='#E5F2FF',
-                    activeforeground='#E5F2FF',
+                    background='#F18C8E', 
+                    activebackground='#F18C8E',
+                    activeforeground='#F18C8E',
                     font=("Helvetica", 12))
 
 happy_reaction.place(relx=.45, 
@@ -657,7 +680,7 @@ sad_reaction.place(relx=.55,
 
 
 reaction_text = Label(text='5. HOW DID THIS REVELATION BY THE ORACLE MAKE YOU FEEL?',
-                        background='#E5F2FF',
+                        background='#F18C8E',
                         font=("Helvetica", 14))
 
 reaction_text.place(relx=.5, 
